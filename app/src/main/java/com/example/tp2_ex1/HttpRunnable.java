@@ -1,6 +1,10 @@
 package com.example.tp2_ex1;
 
 import android.util.Log;
+import android.widget.TextView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -13,17 +17,21 @@ public class HttpRunnable implements Runnable {
     // Define the attributes : the result and the connection
     private String result;
     private HttpURLConnection urlConnection;
+    private TextView textViewResult;
 
     /**
      * Class constructor with the connection
+     *
      * @param urlConnection
      */
-    public HttpRunnable(HttpURLConnection urlConnection) {
+    public HttpRunnable(HttpURLConnection urlConnection, TextView textViewResult) {
         this.urlConnection = urlConnection;
+        this.textViewResult = textViewResult;
     }
 
     /**
      * Get the result of the http request
+     *
      * @return The result
      */
     public String getResult() {
@@ -37,11 +45,15 @@ public class HttpRunnable implements Runnable {
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 
             // Convert it to a string and store it in the class instance
-            result = readStream(in);
+            this.result = readStream(in);
 
             // Log the result
             Log.i("HttpRunnable", result);
-        } catch (IOException e) {
+
+            // Get the result from the request back and print it on the screen
+            String res = new JSONObject(this.result).getString("authenticated");
+            this.textViewResult.setText(res);
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         } finally {
             urlConnection.disconnect();
@@ -50,6 +62,7 @@ public class HttpRunnable implements Runnable {
 
     /**
      * Used to convert an InputStream to a String
+     *
      * @param is
      * @return The result
      * @throws IOException

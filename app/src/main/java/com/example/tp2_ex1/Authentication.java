@@ -54,15 +54,9 @@ public class Authentication extends AppCompatActivity {
                 urlConnection.setRequestProperty("Authorization", basicAuth);
 
                 // Create a httpRunnable to perform the request
-                HttpRunnable httpRunnable = new HttpRunnable(urlConnection);
+                HttpRunnable httpRunnable = new HttpRunnable(urlConnection, textViewResult);
                 Thread thread = new Thread(httpRunnable);
                 thread.start();
-                thread.join();
-
-                // Get the result from the request back and print it on the screen
-                String res = new JSONObject(httpRunnable.getResult()).getString("authenticated");
-                textViewResult.setText(res);
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
